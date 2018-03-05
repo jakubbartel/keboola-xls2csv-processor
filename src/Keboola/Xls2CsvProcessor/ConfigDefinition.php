@@ -20,7 +20,6 @@ class ConfigDefinition extends BaseConfigDefinition
             ->isRequired()
             ->children()
                 ->integerNode('sheet_index')
-                    ->isRequired()
                     ->min(0)
                     ->max(999)
                     ->defaultValue(0)
