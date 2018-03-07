@@ -8,10 +8,6 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         --no-install-recommends && \
     docker-php-ext-install \
-#      curl \
-#      iconv \
-#      libxml \
-#      json \
         zip \
         sockets \
         mbstring \
@@ -26,6 +22,6 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 COPY . /app
 WORKDIR /app
-RUN composer install
+RUN composer install --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader
 
 CMD ["php", "run.php"]
