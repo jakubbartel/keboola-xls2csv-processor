@@ -4,8 +4,39 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "60e5d821be7f68261a5188ad33743c31",
+    "content-hash": "ff2e466dd1f0e7d5296cf647eabca3e0",
     "packages": [
+        {
+            "name": "keboola/csv",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/keboola/php-csv.git",
+                "reference": "6f1d6451464271a81cf0eb0233496327c290c171"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/keboola/php-csv/zipball/6f1d6451464271a81cf0eb0233496327c290c171",
+                "reference": "6f1d6451464271a81cf0eb0233496327c290c171",
+                "shasum": ""
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Keboola\\Csv": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Keboola CSV reader and writer",
+            "homepage": "http://keboola.com",
+            "time": "2018-02-16T11:12:37+00:00"
+        },
         {
             "name": "keboola/php-component",
             "version": "dev-master",

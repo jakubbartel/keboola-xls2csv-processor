@@ -1,21 +1,28 @@
 <?php
 
+// PhpOffice\PhpSpreadsheet requires a timezone to be set
 date_default_timezone_set("UTC");
 
 require __DIR__ . '/vendor/autoload.php';
 
+use Keboola\Xls2CsvProcessor\Exception\UserException;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+
 try {
-    $processor = new \Keboola\Xls2CsvProcessor\Processor();
-    $processor->run();
-} catch(Exception $e) {
-    // TODO handle user and system errors
+    $component = new \Keboola\Xls2CsvProcessor\Component();
+    $component->run();
+} catch(UserException | InvalidConfigurationException $e) {
     error_log($e->getMessage());
+
     exit(1);
 } catch(Throwable $e) {
-    // TODO handle user and system errors
-    error_log('Fatal error');
-    error_log($e->getMessage());
-    exit(1);
+    error_log(get_class($e) . ':' . $e->getMessage());
+    error_log('File: ' . $e->getFile());
+    error_log('Line: ' . $e->getLine());
+    error_log('Code: ' . $e->getCode());
+    error_log('Trace: ' . $e->getTraceAsString());
+
+    exit(2);
 }
 
 exit(0);

@@ -2,63 +2,107 @@
 
 namespace Keboola\Xls2CsvProcessor;
 
-use RecursiveDirectoryIterator;
-use RecursiveTreeIterator;
+use Keboola\Csv\CsvFile;
+use League\Flysystem;
 
 class Processor
 {
 
     /**
-     * @var Component
+     * @var Flysystem\Filesystem
      */
-    private $keboolaComponent;
+    private $fileSystem;
+
+    /**
+     * @var int
+     */
+    private $sheetIndex;
+
+    /**
+     * @var string
+     */
+    private $fileSystemPath;
 
     /**
      * Extractor constructor.
+     *
+     * @param Flysystem\Filesystem $fileSystem
+     * @param string $fileSystemPath
+     * @param int $sheetIndex
      */
-    public function __construct()
+    public function __construct(Flysystem\Filesystem $fileSystem, string $fileSystemPath, int $sheetIndex)
     {
-        $this->keboolaComponent = new Component();
-    }
-
-    private function processDir(string $inFilesDirPath, string $outFilesDirPath): void
-    {
-        $it = new RecursiveTreeIterator(
-            new RecursiveDirectoryIterator($inFilesDirPath, RecursiveDirectoryIterator::SKIP_DOTS)
-        );
-
-        // remove visual elements of path tree
-        $it->setPrefixPart(0 ,'');
-        $it->setPrefixPart(1 ,'');
-        $it->setPrefixPart(2 ,'');
-        $it->setPrefixPart(3 ,'');
-        $it->setPrefixPart(4 ,'');
-        $it->setPrefixPart(5 ,'');
-
-        foreach($it as $path) {
-            if(is_file($path) && preg_match('/\.(xls|xlsx)$/', $path)) {
-                $inputPath = $path;
-                $outputPath = preg_replace(
-                    '/^' . preg_quote($inFilesDirPath, '/') . '/',
-                    $outFilesDirPath,
-                    preg_replace('/\.(xls|xlsx)$/', '.csv', $path)
-                );
-                $sheetIndex = $this->keboolaComponent->getConfig()->getValue(['parameters', 'sheet_index']);
-
-                Xls2Csv::convert($inputPath, $outputPath, $sheetIndex);
-            }
-        }
+        $this->fileSystem = $fileSystem;
+        $this->fileSystemPath = $fileSystemPath;
+        $this->sheetIndex = $sheetIndex;
     }
 
     /**
-     *
+     * @return string[]
      */
-    public function run() : void
+    private function getSupportedExtensions(): array {
+        return [
+            'xls',
+            'xlsx',
+        ];
+    }
+
+    /**
+     * @param string $inFilesDirPath
+     * @param string $outFilesDirPath
+     * @return InOut[]
+     */
+    private function getFilesToProcess(string $inFilesDirPath, string $outFilesDirPath): array {
+        /** @var InOut[] $inOuts */
+        $inOuts = [];
+
+        foreach($this->fileSystem->listContents($inFilesDirPath, true) as $object) {
+            if($object['type'] != 'file') {
+                continue;
+            }
+
+            if( ! in_array($object['extension'], $this->getSupportedExtensions())) {
+                continue;
+            }
+
+            // replace inputDir path prefix with outDir prefix
+            $outFilePath = preg_replace(
+                '/^' . preg_quote($inFilesDirPath, '/') . '/',
+                $outFilesDirPath,
+                sprintf('%s/%s.csv', $object['dirname'], $object['filename'])
+            );
+
+            $inOuts[] = new InOut(
+                $object['path'],
+                $outFilePath
+            );
+        }
+
+        return $inOuts;
+    }
+
+    /**
+     * @param string $inFilesDirPath
+     * @param string $outFilesDirPath
+     */
+    public function processDir(string $inFilesDirPath, string $outFilesDirPath): void
     {
-        $this->processDir(
-            sprintf('%s%s', $this->keboolaComponent->getDataDir(), '/in/files'),
-            sprintf('%s%s', $this->keboolaComponent->getDataDir(), '/out/files')
-        );
+        $inOuts = $this->getFilesToProcess($inFilesDirPath, $outFilesDirPath);
+
+        $fileSystemPath = $this->fileSystemPath;
+        $getFullFileSystemPath = function($path) use ($fileSystemPath) {
+            return sprintf('%s%s', $this->fileSystemPath, $path);
+        };
+
+        foreach($inOuts as $inOut) {
+            $xls = new Xls($getFullFileSystemPath($inOut->getIn()));
+            $xlsArray = $xls->toArray($this->sheetIndex);
+
+            $csv = new CsvFile($inOut->getOut());
+            foreach($xlsArray as $xlsRow) {
+                $csv->writeRow($xlsRow);
+            }
+        }
     }
 
 }
