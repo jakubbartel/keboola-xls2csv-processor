@@ -9,6 +9,7 @@ before_script:
 script:
   - docker build -t xls2cvs-processor .
   - docker run xls2cvs-processor /bin/bash -c "composer install --no-interaction --no-progress && composer ci"
+  - chmod +x ./deploy.sh
 
 after_success:
   - docker images
