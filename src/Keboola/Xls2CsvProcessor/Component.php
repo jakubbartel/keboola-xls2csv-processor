@@ -20,9 +20,7 @@ class Component extends BaseComponent
     {
         parent::__construct();
 
-        $fileSystemAdapter = new Flysystem\Adapter\Local('/');
-        $fileSystem = new Flysystem\Filesystem($fileSystemAdapter);
-        $this->processor = new Processor($fileSystem, '/', $this->getConfig()->getValue(['parameters', 'sheet_index']));
+        $this->processor = new Processor($this->getConfig()->getValue(['parameters', 'sheet_index']));
     }
 
     /**

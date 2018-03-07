@@ -1,8 +1,5 @@
 <?php
 
-// PhpOffice\PhpSpreadsheet requires a timezone to be set
-date_default_timezone_set("UTC");
-
 require __DIR__ . '/vendor/autoload.php';
 
 use Keboola\Xls2CsvProcessor\Exception\UserException;
@@ -16,7 +13,7 @@ try {
 
     exit(1);
 } catch(Throwable $e) {
-    error_log(get_class($e) . ':' . $e->getMessage());
+    error_log(get_class($e) . ': ' . $e->getMessage());
     error_log('File: ' . $e->getFile());
     error_log('Line: ' . $e->getLine());
     error_log('Code: ' . $e->getCode());

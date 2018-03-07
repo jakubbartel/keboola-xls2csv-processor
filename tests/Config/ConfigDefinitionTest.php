@@ -1,6 +1,6 @@
 <?php
 
-namespace Keboola\OneDriveExtractor\Tests\Config;
+namespace Keboola\Xls2CsvProcessor\Tests\Config;
 
 use Keboola\Component;
 use Keboola\Xls2CsvProcessor;
@@ -64,13 +64,13 @@ class ConfigDefinitionTest extends TestCase
 
     public function testLoadInvalidConfigStringSheetIndex() : void
     {
-        $this->expectException(InvalidConfigurationException::class);
-
         $config_json = [
             'parameters' => [
                 'sheet_index' => '1',
             ],
         ];
+
+        $this->expectException(InvalidConfigurationException::class);
 
         new Component\Config\BaseConfig(
             $config_json,
@@ -80,8 +80,6 @@ class ConfigDefinitionTest extends TestCase
 
     public function testLoadInvalidConfigObjectSheetIndex() : void
     {
-        $this->expectException(InvalidConfigurationException::class);
-
         $config_json = [
             'parameters' => [
                 'sheet_index' => [
@@ -89,6 +87,8 @@ class ConfigDefinitionTest extends TestCase
                 ],
             ],
         ];
+
+        $this->expectException(InvalidConfigurationException::class);
 
         new Component\Config\BaseConfig(
             $config_json,
@@ -98,13 +98,13 @@ class ConfigDefinitionTest extends TestCase
 
     public function testLoadInvalidConfigSheetIndexOutLow() : void
     {
-        $this->expectException(InvalidConfigurationException::class);
-
         $config_json = [
             'parameters' => [
                 'sheet_index' => -1,
             ],
         ];
+
+        $this->expectException(InvalidConfigurationException::class);
 
         new Component\Config\BaseConfig(
             $config_json,
@@ -114,13 +114,13 @@ class ConfigDefinitionTest extends TestCase
 
     public function testLoadInvalidConfigSheetIndexOutHigh() : void
     {
-        $this->expectException(InvalidConfigurationException::class);
-
         $config_json = [
             'parameters' => [
                 'sheet_index' => 1000,
             ],
         ];
+
+        $this->expectException(InvalidConfigurationException::class);
 
         new Component\Config\BaseConfig(
             $config_json,

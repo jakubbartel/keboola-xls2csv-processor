@@ -4,14 +4,11 @@ namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Csv\CsvFile;
 use League\Flysystem;
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 
 class Processor
 {
-
-    /**
-     * @var Flysystem\Filesystem
-     */
-    private $fileSystem;
 
     /**
      * @var int
@@ -19,21 +16,12 @@ class Processor
     private $sheetIndex;
 
     /**
-     * @var string
-     */
-    private $fileSystemPath;
-
-    /**
      * Extractor constructor.
      *
-     * @param Flysystem\Filesystem $fileSystem
-     * @param string $fileSystemPath
      * @param int $sheetIndex
      */
-    public function __construct(Flysystem\Filesystem $fileSystem, string $fileSystemPath, int $sheetIndex)
+    public function __construct(int $sheetIndex)
     {
-        $this->fileSystem = $fileSystem;
-        $this->fileSystemPath = $fileSystemPath;
         $this->sheetIndex = $sheetIndex;
     }
 
@@ -48,61 +36,86 @@ class Processor
     }
 
     /**
+     * Look up all xls(x) and return their path with desired output file.
+     *
      * @param string $inFilesDirPath
      * @param string $outFilesDirPath
-     * @return InOut[]
+     * @return array
+     * @throws Exception\InvalidFilePathException
      */
     private function getFilesToProcess(string $inFilesDirPath, string $outFilesDirPath): array {
-        /** @var InOut[] $inOuts */
         $inOuts = [];
 
-        foreach($this->fileSystem->listContents($inFilesDirPath, true) as $object) {
-            if($object['type'] != 'file') {
-                continue;
-            }
+        $finder = new Finder();
+        $finder->files()->in($inFilesDirPath);
 
-            if( ! in_array($object['extension'], $this->getSupportedExtensions())) {
-                continue;
-            }
+        foreach($this->getSupportedExtensions() as $extension) {
+            $finder->files()->name(sprintf('*.%s', $extension));
+        }
 
-            // replace inputDir path prefix with outDir prefix
-            $outFilePath = preg_replace(
-                '/^' . preg_quote($inFilesDirPath, '/') . '/',
+        foreach($finder as $file) {
+            $outFilePath = sprintf('%s%s/%s.csv',
                 $outFilesDirPath,
-                sprintf('%s/%s.csv', $object['dirname'], $object['filename'])
+                mb_substr($file->getPath(), mb_strlen($inFilesDirPath)),
+                $file->getBasename(sprintf('.%s', $file->getExtension()))
             );
 
-            $inOuts[] = new InOut(
-                $object['path'],
-                $outFilePath
-            );
+            $inOuts[] = [
+                'input' => $file->getPathname(),
+                'output' => $outFilePath
+            ];
         }
 
         return $inOuts;
     }
 
     /**
+     * @param string $filePath
+     * @return Processor
+     */
+    public function prepareOutputFile($filePath): self
+    {
+        $fileSystem = new FileSystem();
+
+        $fileSystem->dumpFile($filePath, '');
+
+        return $this;
+    }
+
+    /**
+     * @param string $inFilePath
+     * @param string $outFilePath
+     * @return Processor
+     */
+    public function processFile(string $inFilePath, string $outFilePath): self
+    {
+        $xls = new Xls($inFilePath);
+        $xlsArray = $xls->toArray($this->sheetIndex);
+
+        $this->prepareOutputFile($outFilePath);
+
+        $csv = new CsvFile($outFilePath);
+        foreach($xlsArray as $xlsRow) {
+            $csv->writeRow($xlsRow);
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $inFilesDirPath
      * @param string $outFilesDirPath
+     * @return Processor
      */
-    public function processDir(string $inFilesDirPath, string $outFilesDirPath): void
+    public function processDir(string $inFilesDirPath, string $outFilesDirPath): self
     {
         $inOuts = $this->getFilesToProcess($inFilesDirPath, $outFilesDirPath);
 
-        $fileSystemPath = $this->fileSystemPath;
-        $getFullFileSystemPath = function($path) use ($fileSystemPath) {
-            return sprintf('%s%s', $this->fileSystemPath, $path);
-        };
-
         foreach($inOuts as $inOut) {
-            $xls = new Xls($getFullFileSystemPath($inOut->getIn()));
-            $xlsArray = $xls->toArray($this->sheetIndex);
-
-            $csv = new CsvFile($inOut->getOut());
-            foreach($xlsArray as $xlsRow) {
-                $csv->writeRow($xlsRow);
-            }
+            $this->processFile($inOut['input'], $inOut['output']);
         }
+
+        return $this;
     }
 
 }
