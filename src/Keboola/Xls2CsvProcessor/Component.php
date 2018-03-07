@@ -3,7 +3,6 @@
 namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Component\BaseComponent;
-use League\Flysystem;
 
 class Component extends BaseComponent
 {
