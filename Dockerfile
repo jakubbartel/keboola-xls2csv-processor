@@ -26,6 +26,6 @@ ENV COMPOSER_ALLOW_SUPERUSER 1
 
 COPY . /app
 WORKDIR /app
-RUN composer install
+RUN composer install --no-dev --no-interaction --no-progress --no-scripts --optimize-autoloader
 
 CMD ["php", "run.php"]
