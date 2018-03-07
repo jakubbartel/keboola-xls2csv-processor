@@ -8,10 +8,6 @@ RUN apt-get update && apt-get install -y \
         libpng-dev \
         --no-install-recommends && \
     docker-php-ext-install \
-#      curl \
-#      iconv \
-#      libxml \
-#      json \
         zip \
         sockets \
         mbstring \
