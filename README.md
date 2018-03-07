@@ -13,30 +13,20 @@ If there is no `sheet_index` defined, default value is `0` which is the first sh
 Example processor configuration:
 ```
 {
-    "before": [],
-    "after": [
-        {
-            "definition": {
-                "component": "jakub-bartel.processor-xls2csv"
-            }
-        }
-    ]
+    "definition": {
+        "component": "jakub-bartel.processor-xls2csv"
+    }
 }
 ```
 
 Example processor configuration - process the third sheet of each file:
 ```
 {
-    "before": [],
-    "after": [
-        {
-            "definition": {
-                "component": "jakub-bartel.processor-xls2csv"
-            },
-            "parameters": {
-                "sheet_index": 2
-            }
-        }
-    ]
+    "definition": {
+        "component": "jakub-bartel.processor-xls2csv"
+    },
+    "parameters": {
+        "sheet_index": 2
+    }
 }
 ```
