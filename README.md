@@ -1,5 +1,7 @@
 # Keboola Xls2Csv Processor
 
+[![Build Status](https://travis-ci.org/jakubbartel/keboola-xls2csv-processor.svg?branch=master)](https://travis-ci.org/jakubbartel/keboola-xls2csv-processor)
+
 Convert xls/xlsx (Excel) files to csv files.
 
 ## Functionality
