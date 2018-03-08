@@ -15,7 +15,12 @@ eval $(docker run --rm \
     ecr:get-login ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP})
 
 # Push to the repository
-docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_TAG}
-docker tag ${APP_IMAGE}:latest ${REPOSITORY}:latest
-docker push ${REPOSITORY}:${TRAVIS_TAG}
-docker push ${REPOSITORY}:latest
+if [[ ${TRAVIS_TAG} != "" ]]
+then
+    docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_TAG}
+    docker push ${REPOSITORY}:${TRAVIS_TAG}
+elif [[ ${TRAVIS_PULL_REQUEST} != "false" && ${TRAVIS_BRANCH} != "" ]]
+then
+    docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_BRANCH}
+    docker push ${REPOSITORY}:${TRAVIS_BRANCH}
+fi
