@@ -19,7 +19,7 @@ if [[ ${TRAVIS_TAG} != "" ]]
 then
     docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_TAG}
     docker push ${REPOSITORY}:${TRAVIS_TAG}
-elif [[ ${TRAVIS_PULL_REQUEST} != "false" && ${TRAVIS_BRANCH} != "" ]]
+elif [[ ${TRAVIS_PULL_REQUEST} == "false" && ${TRAVIS_BRANCH} != "" ]]
 then
     docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_BRANCH}
     docker push ${REPOSITORY}:${TRAVIS_BRANCH}
