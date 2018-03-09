@@ -8,21 +8,6 @@ class Component extends BaseComponent
 {
 
     /**
-     * @var Processor
-     */
-    private $processor;
-
-    /**
-     * Component constructor.
-     */
-    public function __construct()
-    {
-        parent::__construct();
-
-        $this->processor = new Processor($this->getConfig()->getValue(['parameters', 'sheet_index']));
-    }
-
-    /**
      * @return string
      */
     protected function getConfigDefinitionClass(): string
@@ -35,7 +20,9 @@ class Component extends BaseComponent
      */
     public function run() : void
     {
-        $this->processor->processDir(
+        $processor = new Processor($this->getConfig()->getValue(['parameters', 'sheet_index']));
+
+        $processor->processDir(
             sprintf('%s%s', $this->getDataDir(), '/in/files'),
             sprintf('%s%s', $this->getDataDir(), '/out/files')
         );
