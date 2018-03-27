@@ -43,7 +43,8 @@ class Processor
      * @return array
      * @throws Exception\InvalidFilePathException
      */
-    private function getFilesToProcess(string $inFilesDirPath, string $outFilesDirPath): array {
+    private function getFilesToProcess(string $inFilesDirPath, string $outFilesDirPath): array
+    {
         $inOuts = [];
 
         $finder = new Finder();
@@ -54,11 +55,18 @@ class Processor
         }
 
         foreach($finder as $file) {
-            $outFilePath = sprintf('%s%s/%s.csv',
-                $outFilesDirPath,
-                mb_substr($file->getPath(), mb_strlen($inFilesDirPath)),
-                $file->getBasename(sprintf('.%s', $file->getExtension()))
-            );
+            if($file->getRelativePath() === '') {
+                $outFilePath = sprintf('%s/%s.csv',
+                    $outFilesDirPath,
+                    $file->getBasename(sprintf('.%s', $file->getExtension()))
+                );
+            } else {
+                $outFilePath = sprintf('%s/%s/%s.csv',
+                    $outFilesDirPath,
+                    $file->getRelativePath(),
+                    $file->getBasename(sprintf('.%s', $file->getExtension()))
+                );
+            }
 
             $inOuts[] = [
                 'input' => $file->getPathname(),
