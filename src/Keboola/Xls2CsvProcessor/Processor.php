@@ -26,16 +26,6 @@ class Processor
     }
 
     /**
-     * @return string[]
-     */
-    private function getSupportedExtensions(): array {
-        return [
-            'xls',
-            'xlsx',
-        ];
-    }
-
-    /**
      * Look up all xls(x) and return their path with desired output file.
      *
      * @param string $inFilesDirPath
@@ -49,10 +39,6 @@ class Processor
 
         $finder = new Finder();
         $finder->files()->in($inFilesDirPath);
-
-        foreach($this->getSupportedExtensions() as $extension) {
-            $finder->files()->name(sprintf('*.%s', $extension));
-        }
 
         foreach($finder as $file) {
             if($file->getRelativePath() === '') {
