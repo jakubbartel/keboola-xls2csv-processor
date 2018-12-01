@@ -2,7 +2,6 @@
 
 namespace Keboola\Xls2CsvProcessor;
 
-use ErrorException;
 use PhpOffice;
 
 class Xls
@@ -26,11 +25,7 @@ class Xls
 
         try {
             $this->spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($sheetPath);
-        } catch(PhpOffice\PhpSpreadsheet\Reader\Exception | ErrorException $e) {
-            echo $sheetPath;
-
-            echo $e->getTraceAsString();
-
+        } catch(PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
             throw new Exception\InvalidXlsFileException(
                 sprintf('Unable to process "%s" file: "%s"', $sheetPath, $e->getMessage()),
                 0,
@@ -42,6 +37,7 @@ class Xls
     /**
      * @param int $sheetIndex
      * @return array
+     * @throws PhpOffice\PhpSpreadsheet\Exception
      */
     public function toArray(int $sheetIndex): array
     {

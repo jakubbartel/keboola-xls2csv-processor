@@ -3,7 +3,6 @@
 namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Csv\CsvFile;
-use League\Flysystem;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -31,7 +30,6 @@ class Processor
      * @param string $inFilesDirPath
      * @param string $outFilesDirPath
      * @return array
-     * @throws Exception\InvalidFilePathException
      */
     private function getFilesToProcess(string $inFilesDirPath, string $outFilesDirPath): array
     {
@@ -80,6 +78,9 @@ class Processor
      * @param string $inFilePath
      * @param string $outFilePath
      * @return Processor
+     * @throws Exception\InvalidXlsFileException
+     * @throws \Keboola\Csv\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function processFile(string $inFilePath, string $outFilePath): self
     {
@@ -100,6 +101,9 @@ class Processor
      * @param string $inFilesDirPath
      * @param string $outFilesDirPath
      * @return Processor
+     * @throws Exception\InvalidXlsFileException
+     * @throws \Keboola\Csv\Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Exception
      */
     public function processDir(string $inFilesDirPath, string $outFilesDirPath): self
     {
