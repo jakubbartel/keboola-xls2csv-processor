@@ -3,6 +3,7 @@
 namespace Keboola\Xls2CsvProcessor\Tests\Component;
 
 use Keboola\Xls2CsvProcessor\Component;
+use Keboola\Xls2CsvProcessor\Exception\UserException;
 use PHPUnit\Framework\TestCase;
 
 class ComponentTest extends TestCase
@@ -55,6 +56,10 @@ class ComponentTest extends TestCase
         if(file_exists(__DIR__ . '/test_run_1/data/out/files/input.csv')) {
             unlink(__DIR__ . '/test_run_1/data/out/files/input.csv');
         }
+
+        if(file_exists(__DIR__ . '/test_run_2/data/out/files/input.csv')) {
+            unlink(__DIR__ . '/test_run_2/data/out/files/input.csv');
+        }
     }
 
     public function testRun(): void
@@ -70,6 +75,16 @@ class ComponentTest extends TestCase
             __DIR__.'/test_run_1/data/out/files/input_expected.csv',
             __DIR__ . '/test_run_1/data/out/files/input.csv'
         );
+    }
+
+    public function testRunPdf(): void
+    {
+        putenv('KBC_DATADIR=' . __DIR__ . '/test_run_2/data');
+
+        $this->expectException(UserException::class);
+
+        $component = new Component();
+        $component->run();
     }
 
 }
