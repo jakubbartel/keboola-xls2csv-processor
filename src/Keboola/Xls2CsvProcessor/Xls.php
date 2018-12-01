@@ -15,19 +15,19 @@ class Xls
     /**
      * Xls constructor.
      *
-     * @param string $sheetPath
+     * @param string $spreadsheetPath
      * @throws Exception\InvalidXlsFileException
      */
-    public function __construct(string $sheetPath)
+    public function __construct(string $spreadsheetPath)
     {
         // PhpOffice\PhpSpreadsheet requires a timezone to be set
         date_default_timezone_set("UTC");
 
         try {
-            $this->spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($sheetPath);
+            $this->spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($spreadsheetPath);
         } catch(PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
             throw new Exception\InvalidXlsFileException(
-                sprintf('Unable to process "%s" file: "%s"', $sheetPath, $e->getMessage()),
+                sprintf('Unable to process "%s" file: "%s"', $spreadsheetPath, $e->getMessage()),
                 0,
                 $e
             );
