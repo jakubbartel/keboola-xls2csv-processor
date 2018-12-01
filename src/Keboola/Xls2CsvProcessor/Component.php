@@ -3,6 +3,7 @@
 namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Component\BaseComponent;
+use Keboola\Xls2CsvProcessor\Exception\InvalidSheetIndexException;
 use Keboola\Xls2CsvProcessor\Exception\InvalidXlsFileException;
 use Keboola\Xls2CsvProcessor\Exception\UserException;
 
@@ -20,9 +21,9 @@ class Component extends BaseComponent
     /**
      * The source of life.
      *
-     * @throws UserException
+     * @throws Exception\InvalidSheetException
      * @throws \Keboola\Csv\Exception
-     * @throws \PhpOffice\PhpSpreadsheet\Exception
+     * @throws UserException
      */
     public function run() : void
     {
@@ -35,6 +36,8 @@ class Component extends BaseComponent
             );
         } catch(InvalidXlsFileException $e) {
             throw new UserException(sprintf('Invalid xls file: %s', $e->getMessage()), 0, $e);
+        } catch(InvalidSheetIndexException $e) {
+            throw new UserException(sprintf('Invalid sheet index: %s', $e->getMessage()), 0, $e);
         }
     }
 

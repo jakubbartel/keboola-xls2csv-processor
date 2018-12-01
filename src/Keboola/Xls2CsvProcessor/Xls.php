@@ -37,13 +37,24 @@ class Xls
     /**
      * @param int $sheetIndex
      * @return array
-     * @throws PhpOffice\PhpSpreadsheet\Exception
+     * @throws Exception\InvalidSheetIndexException
+     * @throws Exception\InvalidSheetException
      */
     public function toArray(int $sheetIndex): array
     {
-        $this->spreadsheet->setActiveSheetIndex($sheetIndex);
+        try {
+            $this->spreadsheet->setActiveSheetIndex($sheetIndex);
+        } catch(PhpOffice\PhpSpreadsheet\Exception $e) {
+            throw new Exception\InvalidSheetIndexException(sprintf('Cannot set active sheet to %d', $sheetIndex));
+        }
 
-        return $this->spreadsheet->getActiveSheet()->toArray();
+        try {
+            $arr = $this->spreadsheet->getActiveSheet()->toArray();
+        } catch(PhpOffice\PhpSpreadsheet\Exception $e) {
+            throw new Exception\InvalidSheetException(sprintf('Cannot parse data array from sheet %d', $sheetIndex));
+        }
+
+        return $arr;
     }
 
 }

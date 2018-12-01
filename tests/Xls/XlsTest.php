@@ -3,6 +3,8 @@
 namespace Keboola\Xls2CsvProcessor\Tests\Xls;
 
 use Keboola\Csv\CsvFile;
+use Keboola\Xls2CsvProcessor\Exception\InvalidSheetIndexException;
+use Keboola\Xls2CsvProcessor\Exception\InvalidXlsFileException;
 use Keboola\Xls2CsvProcessor\Xls;
 use PHPUnit\Framework\TestCase;
 
@@ -49,6 +51,22 @@ class XlsTest extends TestCase
         }
 
         $this->assertEquals($xls->toArray(1), $assertData);
+    }
+
+    public function testInvalidXls() : void
+    {
+        $this->expectException(InvalidXlsFileException::class);
+
+        $xls = new Xls(__DIR__ . '/fixtures/hello.pdf');
+    }
+
+    public function testInvalidSheetIndex() : void
+    {
+        $xls = new Xls(__DIR__ . '/fixtures/valid.xls');
+
+        $this->expectException(InvalidSheetIndexException::class);
+
+        $xls->toArray(666);
     }
 
 }
