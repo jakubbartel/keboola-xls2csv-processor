@@ -2,13 +2,13 @@
 
 [![Build Status](https://travis-ci.org/jakubbartel/keboola-xls2csv-processor.svg?branch=master)](https://travis-ci.org/jakubbartel/keboola-xls2csv-processor)
 
-Convert xls/xlsx (Excel) files to csv files.
+Convert XLS/XLSX (Microsoft Excel) files to CSV files.
 
-## Functionality
+## Usage
 
-Processor takes all files in input directory `/data/in/files` (and all subdirectories), tries to decode them as XLS
-format and transfers them to `.csv` files. Sheet within the xls file can be selected by `sheet_index` parameter.
-If there is no `sheet_index` defined, default value is `0` which is the first sheet.
+The processor takes all files in the input directory `/data/in/files` (and all subdirectories), reads them as XLS
+files and converts them to CSV files. A sheet within the XLS file can be selected by the `sheet_index` parameter.
+If there is no `sheet_index` defined, the default value is `0` which is the first sheet.
 
 ## Configuration
 
