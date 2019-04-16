@@ -78,10 +78,10 @@ class Processor
      * @param string $inFilePath
      * @param string $outFilePath
      * @return Processor
-     * @throws Exception\InvalidSheetException
      * @throws Exception\InvalidSheetIndexException
      * @throws Exception\InvalidXlsFileException
      * @throws \Keboola\Csv\Exception
+     * @throws Exception\SheetReaderException
      */
     public function processFile(string $inFilePath, string $outFilePath): self
     {
@@ -102,10 +102,10 @@ class Processor
      * @param string $inFilesDirPath
      * @param string $outFilesDirPath
      * @return Processor
-     * @throws Exception\InvalidSheetException
      * @throws Exception\InvalidSheetIndexException
      * @throws Exception\InvalidXlsFileException
      * @throws \Keboola\Csv\Exception
+     * @throws Exception\SheetReaderException
      */
     public function processDir(string $inFilesDirPath, string $outFilesDirPath): self
     {

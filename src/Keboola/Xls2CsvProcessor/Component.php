@@ -3,8 +3,10 @@
 namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Component\BaseComponent;
+use Keboola\Csv\Exception;
 use Keboola\Xls2CsvProcessor\Exception\InvalidSheetIndexException;
 use Keboola\Xls2CsvProcessor\Exception\InvalidXlsFileException;
+use Keboola\Xls2CsvProcessor\Exception\SheetReaderException;
 use Keboola\Xls2CsvProcessor\Exception\UserException;
 
 class Component extends BaseComponent
@@ -21,9 +23,8 @@ class Component extends BaseComponent
     /**
      * The source of life.
      *
-     * @throws Exception\InvalidSheetException
-     * @throws \Keboola\Csv\Exception
      * @throws UserException
+     * @throws Exception
      */
     public function run() : void
     {
@@ -34,7 +35,7 @@ class Component extends BaseComponent
                 sprintf('%s%s', $this->getDataDir(), '/in/files'),
                 sprintf('%s%s', $this->getDataDir(), '/out/files')
             );
-        } catch(InvalidXlsFileException $e) {
+        } catch(InvalidXlsFileException|SheetReaderException $e) {
             throw new UserException(sprintf('Invalid xls file: %s', $e->getMessage()), 0, $e);
         } catch(InvalidSheetIndexException $e) {
             throw new UserException(sprintf('Invalid sheet index: %s', $e->getMessage()), 0, $e);

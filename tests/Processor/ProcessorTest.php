@@ -39,7 +39,7 @@ class ProcessorTest extends TestCase
         $fileSystem = vfsStream::setup();
 
         $processor->processDir(
-            __DIR__ . '/fixtures/process_directory',
+            __DIR__ . '/fixtures/process_directory/input',
             $fileSystem->url() . '/'
         );
 
@@ -50,27 +50,27 @@ class ProcessorTest extends TestCase
         $this->assertTrue($fileSystem->hasChild('subdir_2/input.csv'));
 
         $this->assertFileEquals(
-            __DIR__ . '/fixtures/process_directory/output.csv',
+            __DIR__ . '/fixtures/process_directory/output/output.csv',
             $fileSystem->url() . '/input.csv'
         );
 
         $this->assertFileEquals(
-            __DIR__ . '/fixtures/process_directory/subdir_1/output_1.csv',
+            __DIR__ . '/fixtures/process_directory/output/subdir_1/output_1.csv',
             $fileSystem->url() . '/subdir_1/input_1.csv'
         );
 
         $this->assertFileEquals(
-            __DIR__ . '/fixtures/process_directory/subdir_1/output_2.csv',
+            __DIR__ . '/fixtures/process_directory/output/subdir_1/output_2.csv',
             $fileSystem->url() . '/subdir_1/input_2.csv'
         );
 
         $this->assertFileEquals(
-            __DIR__ . '/fixtures/process_directory/subdir_1/subsubdir/output.csv',
+            __DIR__ . '/fixtures/process_directory/output/subdir_1/subsubdir/output.csv',
             $fileSystem->url() . '/subdir_1/subsubdir/input.csv'
         );
 
         $this->assertFileEquals(
-            __DIR__ . '/fixtures/process_directory/subdir_2/output.csv',
+            __DIR__ . '/fixtures/process_directory/output/subdir_2/output.csv',
             $fileSystem->url() . '/subdir_2/input.csv'
         );
     }

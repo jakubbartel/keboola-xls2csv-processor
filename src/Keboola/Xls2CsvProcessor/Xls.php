@@ -2,56 +2,94 @@
 
 namespace Keboola\Xls2CsvProcessor;
 
-use PhpOffice;
+use Box\Spout;
+use Keboola\Xls2CsvProcessor\Exception\InvalidXlsFileException;
+use Keboola\Xls2CsvProcessor\Exception\SheetReaderException;
 
 class Xls
 {
 
     /**
-     * @var PhpOffice\PhpSpreadsheet\Spreadsheet
+     * @var Spout\Reader\ReaderInterface
      */
     private $spreadsheet;
+
+    /**
+     * @var Spout\Reader\XLSX\Sheet|null
+     */
+    private $sheet;
 
     /**
      * Xls constructor.
      *
      * @param string $spreadsheetPath
-     * @throws Exception\InvalidXlsFileException
+     * @throws SheetReaderException
+     * @throws InvalidXlsFileException
      */
     public function __construct(string $spreadsheetPath)
     {
-        // PhpOffice\PhpSpreadsheet requires a timezone to be set
-        date_default_timezone_set("UTC");
+        try {
+            $reader = Spout\Reader\ReaderFactory::create(Spout\Common\Type::XLSX);
+        } catch(Spout\Common\Exception\UnsupportedTypeException $e) {
+            throw new SheetReaderException('Wrong type init');
+        }
 
         try {
-            $this->spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($spreadsheetPath);
-        } catch(PhpOffice\PhpSpreadsheet\Reader\Exception $e) {
-            throw new Exception\InvalidXlsFileException(
-                sprintf('Unable to process "%s" file: "%s"', $spreadsheetPath, $e->getMessage()),
-                0,
-                $e
-            );
+            $reader->open($spreadsheetPath);
+        } catch(Spout\Common\Exception\IOException $e) {
+            throw new InvalidXlsFileException('Cannot create XLS reader');
         }
+
+        $this->spreadsheet = $reader;
+    }
+
+    /**
+     * @param int $sheetIndex
+     * @return Xls
+     * @throws Exception\InvalidSheetIndexException
+     * @throws InvalidXlsFileException
+     */
+    private function setSheetIndex(int $sheetIndex): self {
+        $this->sheet = null;
+
+        try {
+            foreach($this->spreadsheet->getSheetIterator() as $sheet) {
+                if($sheet->getIndex() === $sheetIndex) {
+                    $this->sheet = $sheet;
+                }
+            }
+        } catch(Spout\Reader\Exception\ReaderNotOpenedException $e) {
+            throw new Exception\InvalidXlsFileException(sprintf('Cannot parse sheet %d from the XLS', $sheetIndex));
+        }
+
+        if($this->sheet === null) {
+            throw new Exception\InvalidSheetIndexException(sprintf('Cannot set active sheet to %d', $sheetIndex));
+        }
+
+        return $this;
     }
 
     /**
      * @param int $sheetIndex
      * @return array
      * @throws Exception\InvalidSheetIndexException
-     * @throws Exception\InvalidSheetException
+     * @throws InvalidXlsFileException
      */
     public function toArray(int $sheetIndex): array
     {
-        try {
-            $this->spreadsheet->setActiveSheetIndex($sheetIndex);
-        } catch(PhpOffice\PhpSpreadsheet\Exception $e) {
-            throw new Exception\InvalidSheetIndexException(sprintf('Cannot set active sheet to %d', $sheetIndex));
-        }
+        $this->setSheetIndex($sheetIndex);
 
-        try {
-            $arr = $this->spreadsheet->getActiveSheet()->toArray();
-        } catch(PhpOffice\PhpSpreadsheet\Exception $e) {
-            throw new Exception\InvalidSheetException(sprintf('Cannot parse data array from sheet %d', $sheetIndex));
+        $arr = [];
+
+        // just for static code checkers - a sheet should always be set after setSheetIndex (if no exception thrown)
+        if($this->sheet !== null) {
+            try {
+                foreach($this->sheet->getRowIterator() as $row) {
+                    $arr[] = $row;
+                }
+            } catch(Spout\Common\Exception\SpoutException $e) {
+                throw new InvalidXlsFileException('Cannot read XLS file row');
+            }
         }
 
         return $arr;
