@@ -69,4 +69,19 @@ class XlsTest extends TestCase
         $xls->toArray(666);
     }
 
+    public function testFormatDates() : void
+    {
+        $xls = new Xls(__DIR__.'/fixtures/format_dates.xlsx');
+
+        $data = $xls->toArray(0);
+
+        $stringsOnly = array_reduce($data, function($rowCarry, $row) {
+            return $rowCarry && array_reduce($row, function($carry, $item) {
+                    return $carry && (is_string($item) || is_int($item) || is_float($item) || is_bool($item));
+                }, true);
+        }, true);
+
+        $this->assertEquals(true, $stringsOnly, 'Data contains some items that are not strings');
+    }
+
 }

@@ -34,6 +34,8 @@ class Xls
             throw new SheetReaderException('Wrong type init');
         }
 
+        $reader->setShouldFormatDates(true);
+
         try {
             $reader->open($spreadsheetPath);
         } catch(Spout\Common\Exception\IOException $e) {
