@@ -14,8 +14,6 @@ class XlsTest extends TestCase
 
         $data = $xls->toArray(0);
 
-        var_dump($data);
-
         $this->assertGreaterThan(0, count($data), 'Empty data output');
     }
 
