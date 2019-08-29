@@ -6,8 +6,8 @@ Convert XLS/XLSX (Microsoft Excel) files to CSV files.
 
 ## Usage
 
-The processor takes all files in the input directory `/data/in/files` (and all subdirectories), reads them as XLS
-files and converts them to CSV files. A sheet within the XLS file can be selected by the `sheet_index` parameter.
+The processor takes all files in the input directory `/data/in/files` (and all subdirectories), reads them as XLS/XLSX
+files and converts them to CSV files. A sheet within the XLS(X) file can be selected by the `sheet_index` parameter.
 If there is no `sheet_index` defined, the default value is `0` which is the first sheet.
 
 ## Configuration

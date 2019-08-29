@@ -82,11 +82,18 @@ class Processor
      * @throws Exception\InvalidXlsFileException
      * @throws \Keboola\Csv\Exception
      * @throws Exception\SheetReaderException
+     * @throws Exception\InvalidSheetException
      */
     public function processFile(string $inFilePath, string $outFilePath): self
     {
-        $xls = new Xls($inFilePath);
-        $xlsArray = $xls->toArray($this->sheetIndex);
+        try {
+            $xlsx = new Xlsx($inFilePath);
+            $xlsArray = $xlsx->toArray($this->sheetIndex);
+        } catch(Exception\InvalidXlsFileException $e) {
+            // retry with XLS reader, let the exception be thrown
+            $xls = new Xls($inFilePath);
+            $xlsArray = $xls->toArray($this->sheetIndex);
+        }
 
         $this->prepareOutputFile($outFilePath);
 
@@ -106,6 +113,7 @@ class Processor
      * @throws Exception\InvalidXlsFileException
      * @throws \Keboola\Csv\Exception
      * @throws Exception\SheetReaderException
+     * @throws Exception\InvalidSheetException
      */
     public function processDir(string $inFilesDirPath, string $outFilesDirPath): self
     {
