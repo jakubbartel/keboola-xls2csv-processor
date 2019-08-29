@@ -4,11 +4,11 @@ namespace Keboola\Xls2CsvProcessor\Tests\Xls;
 
 use Box\Spout;
 use Keboola\Csv\CsvFile;
-use Keboola\Xls2CsvProcessor\Xls;
+use Keboola\Xls2CsvProcessor\Xlsx;
 use org\bovigo\vfs\vfsStream;
 use PHPUnit\Framework\TestCase;
 
-class BigXlsTest extends TestCase
+class BigXlsxTest extends TestCase
 {
 
     private function generateRandomXls(int $numRows, int $numCols, string $filePath): void {
@@ -40,7 +40,7 @@ class BigXlsTest extends TestCase
 
 //        $this->generateRandomXls($numRows, $numCols, $filePath);
 
-        $xls = new Xls($filePath);
+        $xls = new Xlsx($filePath);
 
         $data = $xls->toArray(0);
 

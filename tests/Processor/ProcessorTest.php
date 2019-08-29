@@ -18,7 +18,7 @@ class ProcessorTest extends TestCase
         $fileSystem = vfsStream::setup();
 
         $processor->processFile(
-            __DIR__ . '/fixtures/process_one_sheet/input.xls',
+            __DIR__.'/fixtures/process_one_sheet/input.xlsx',
             $fileSystem->url() . '/output.csv'
         );
 
@@ -26,6 +26,27 @@ class ProcessorTest extends TestCase
 
         $this->assertFileEquals(
             __DIR__ . '/fixtures/process_one_sheet/output.csv',
+            $fileSystem->url() . '/output.csv'
+        );
+    }
+
+    public function testProcessOneXls() : void
+    {
+        $sheetIndex = 0;
+
+        $processor = new Xls2CsvProcessor\Processor($sheetIndex);
+
+        $fileSystem = vfsStream::setup();
+
+        $processor->processFile(
+            __DIR__.'/fixtures/process_one_xls/this_is_xls.xlsx',
+            $fileSystem->url() . '/output.csv'
+        );
+
+        $this->assertTrue($fileSystem->hasChild('output.csv'));
+
+        $this->assertFileEquals(
+            __DIR__ . '/fixtures/process_one_xls/output.csv',
             $fileSystem->url() . '/output.csv'
         );
     }
