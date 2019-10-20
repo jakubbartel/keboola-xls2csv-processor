@@ -81,18 +81,26 @@ class Xlsx
 
         $arr = [];
 
+        $maxColumns = 0;
+
         // just for static code checkers - a sheet should always be set after setSheetIndex (if no exception thrown)
         if($this->sheet !== null) {
             try {
                 foreach($this->sheet->getRowIterator() as $row) {
+                    if($row === null) {
+                        continue;
+                    }
+
                     $arr[] = $row;
+
+                    $maxColumns = max($maxColumns, count($row));
                 }
             } catch(Spout\Common\Exception\SpoutException $e) {
                 throw new Exception\InvalidSheetException('Cannot read XLS file row');
             }
         }
 
-        return $arr;
+        return Utils::enforceColumnsNum($arr, $maxColumns);
     }
 
 }
