@@ -17,4 +17,15 @@ class XlsTest extends TestCase
         $this->assertGreaterThan(0, count($data), 'Empty data output');
     }
 
+    public function testVariableColumnsNum() : void
+    {
+        $xls = new Xls(__DIR__.'/fixtures/variable_columns_num.xls');
+
+        $arr = $xls->toArray(0);
+
+        foreach($arr as $row) {
+            $this->assertEquals(3, count($row));
+        }
+    }
+
 }

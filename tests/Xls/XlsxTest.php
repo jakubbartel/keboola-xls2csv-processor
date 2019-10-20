@@ -85,4 +85,15 @@ class XlsxTest extends TestCase
         $this->assertEquals(true, $stringsOnly, 'Data contains some items that are not strings');
     }
 
+    public function testVariableColumnsNum() : void
+    {
+        $xls = new Xlsx(__DIR__.'/fixtures/variable_columns_num.xlsx');
+
+        $arr = $xls->toArray(0);
+
+        foreach($arr as $row) {
+            $this->assertEquals(3, count($row));
+        }
+    }
+
 }
