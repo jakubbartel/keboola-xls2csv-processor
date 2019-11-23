@@ -87,4 +87,14 @@ class ComponentTest extends TestCase
         $component->run();
     }
 
+    public function testInvalidConfig(): void
+    {
+        putenv('KBC_DATADIR=' . __DIR__ . '/test_run_3/data');
+
+        $this->expectException(UserException::class);
+
+        $component = new Component();
+        $component->run();
+    }
+
 }

@@ -3,6 +3,7 @@
 namespace Keboola\Xls2CsvProcessor;
 
 use Keboola\Component\BaseComponent;
+use Keboola\Component\UserException as ComponentUserException;
 use Keboola\Csv\Exception;
 use Keboola\Xls2CsvProcessor\Exception\InvalidSheetException;
 use Keboola\Xls2CsvProcessor\Exception\InvalidSheetIndexException;
@@ -12,6 +13,20 @@ use Keboola\Xls2CsvProcessor\Exception\UserException;
 
 class Component extends BaseComponent
 {
+
+    /**
+     * Component constructor.
+     *
+     * @throws UserException
+     */
+    public function __construct()
+    {
+        try {
+            parent::__construct();
+        } catch(ComponentUserException $e) {
+            throw new UserException($e);
+        }
+    }
 
     /**
      * @return string
