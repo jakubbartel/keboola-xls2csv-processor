@@ -14,11 +14,13 @@ eval $(docker run --rm \
     quay.io/keboola/developer-portal-cli-v2:latest \
     ecr:get-login ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP})
 
-docker tag ${APP_IMAGE}:latest ${REPOSITORY}:latest
-docker push ${REPOSITORY}:latest
-
-docker run --rm \
-    -e KBC_DEVELOPERPORTAL_USERNAME \
-    -e KBC_DEVELOPERPORTAL_PASSWORD \
-    quay.io/keboola/developer-portal-cli-v2:latest \
-    update-app-repository ${KBC_DEVELOPERPORTAL_VENDOR} ${KBC_DEVELOPERPORTAL_APP} ${TRAVIS_TAG} ecr ${REPOSITORY}
+# Push to the repository
+if [[ ${TRAVIS_TAG} != "" ]]
+then
+    docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_TAG}
+    docker push ${REPOSITORY}:${TRAVIS_TAG}
+elif [[ ${TRAVIS_PULL_REQUEST} == "false" && ${TRAVIS_BRANCH} != "" ]]
+then
+    docker tag ${APP_IMAGE}:latest ${REPOSITORY}:${TRAVIS_BRANCH}
+    docker push ${REPOSITORY}:${TRAVIS_BRANCH}
+fi
